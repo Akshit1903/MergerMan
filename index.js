@@ -27,7 +27,7 @@ app.post("/upload-pdf", upload.array("pdf-files"), function (req, res, next) {
   (async () => {
     for (let file of files) {
       console.log(file);
-      await merger.add(file.path, "2-3", "7-8");
+      await merger.add(file.path);
     }
     await merger.save("merged.pdf");
     for (let file of files) {
