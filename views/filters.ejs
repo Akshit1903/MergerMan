@@ -1,0 +1,21 @@
+<%- include('header'); -%>
+<div id="error-box" class="alert alert-danger invisible" role="alert">
+  Please fill the page indexes carefully!
+</div>
+<div class="upload-box card">
+  <div class="card-header">Select Page Indexes</div>
+  <div class="card-body">
+    <h5 class="card-title">Specify which pages you want in your final PDF</h5>
+    <p class="card-text">Give the ranges to your uploaded PDFs.</p>
+    <form
+      class="needs-validation"
+      action="/upload-pdf"
+      method="post"
+      enctype="multipart/form-data"
+      novalidate
+    >
+      <input type="submit" class="btn btn-secondary btn-lg" value="Upload" />
+    </form>
+  </div>
+</div>
+<%- include('footer'); -%>

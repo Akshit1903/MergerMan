@@ -1,0 +1,34 @@
+<%- include('header'); -%>
+<div id="error-box" class="alert alert-danger invisible" role="alert">
+  Please attach at least one file!
+</div>
+
+<div class="upload-box card">
+  <div class="card-header">Upload PDF Files</div>
+  <div class="card-body">
+    <h5 class="card-title">Merge 2 or more PDF files</h5>
+    <p class="card-text">
+      Click the button below to upload the files that you want to join.
+    </p>
+    <form
+      class="needs-validation"
+      action="/upload-pdf"
+      method="post"
+      enctype="multipart/form-data"
+      novalidate
+    >
+      <input
+        id="pdf-entry"
+        required
+        class="form-control mb-3"
+        type="file"
+        name="pdf-files"
+        accept=".pdf"
+        multiple
+      />
+      <input type="submit" class="btn btn-secondary btn-lg" value="Upload" />
+    </form>
+  </div>
+</div>
+
+<%- include("footer"); -%>
