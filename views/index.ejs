@@ -12,23 +12,23 @@
     </p>
     <form
       class="needs-validation"
-      action="/upload-pdf"
+      action="/"
       method="post"
       enctype="multipart/form-data"
       novalidate
     >
       <input
         id="pdf-entry"
-        required
         class="form-control mb-3"
         type="file"
         name="pdf-files"
         accept=".pdf"
         multiple
+        required
       />
       <input type="submit" class="btn btn-secondary btn-lg" value="Upload" />
     </form>
   </div>
 </div>
-
+<script src="./pub.js"></script>
 <%- include("footer"); -%>
