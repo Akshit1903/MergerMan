@@ -60,6 +60,8 @@ app.post("/filters", (req, res) => {
   const pdfFiles = req.session.pdfFilesInfo;
   const startingPageNumbers = req.body.startingPageNumbers;
   const endingPageNumbers = req.body.endingPageNumbers;
+  console.log(pdfFiles);
+
   // IIFE invoked because current scope can't be async
   (async () => {
     // Concatenating all files one by one
@@ -83,6 +85,10 @@ app.post("/filters", (req, res) => {
 // The array is used to render the filter route.
 app.get("/filters", (req, res) => {
   const pdfFiles = req.session.pdfFilesInfo;
+  if (!pdfFiles) {
+    res.send("error!");
+    return;
+  }
   res.render("filters", { pdfFiles: pdfFiles });
 });
 
