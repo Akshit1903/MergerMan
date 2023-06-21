@@ -46,7 +46,8 @@ app.post("/", upload.array("pdf-files"), (req, res) => {
   // IIFE invoked as current scope cannot be async
   (async () => {
     for (let i = 0; i < pdfFiles.length; i++) {
-      let dataBuffer = fs.readFileSync(pdfFiles[i].path);
+      // console.log(path.join(__dirname, pdfFiles[i].path));
+      let dataBuffer = fs.readFileSync(path.join(__dirname, pdfFiles[i].path));
       let fileData = await pdfPageCounter(dataBuffer);
       pdfFiles[i]["pages"] = fileData.numpages;
     }
