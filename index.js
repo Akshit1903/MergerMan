@@ -43,6 +43,7 @@ const upload = multer({ storage: storage });
 // PDF info array is stored and info about the number of pages is added asynchronously
 app.post("/", upload.array("pdf-files"), (req, res) => {
   const pdfFiles = req.files;
+
   // IIFE invoked as current scope cannot be async
   (async () => {
     for (let i = 0; i < pdfFiles.length; i++) {
@@ -113,6 +114,11 @@ app.get("/", (req, res) => {
 });
 
 app.listen(3000, () => {
+  // Check if folder exists
+  const folderPath = path.resolve(path.join(__dirname, "/tmp"));
+  if (!fs.existsSync(folderPath)) {
+    fs.mkdirSync(folderPath);
+  }
   console.log(`app listening on port 3000`);
 });
 
