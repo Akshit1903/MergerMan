@@ -48,7 +48,17 @@ app.post("/", upload.array("pdf-files"), async (req, res) => {
   const pdfFiles = req.files;
 
   // IIFE invoked as current scope cannot be async
-  await (async () => {
+  // await (async () => {
+  //   for (let i = 0; i < pdfFiles.length; i++) {
+  //     // console.log(path.join(__dirname, pdfFiles[i].path));
+  //     let dataBuffer = fs.readFileSync(path.join(__dirname, pdfFiles[i].path));
+  //     let fileData = await pdfPageCounter(dataBuffer);
+  //     pdfFiles[i]["pages"] = fileData.numpages;
+  //   }
+  //   req.session.pdfFilesInfo = pdfFiles;
+  //   res.redirect("/filters");
+  // })();
+  const cur = async () => {
     for (let i = 0; i < pdfFiles.length; i++) {
       // console.log(path.join(__dirname, pdfFiles[i].path));
       let dataBuffer = fs.readFileSync(path.join(__dirname, pdfFiles[i].path));
@@ -57,7 +67,8 @@ app.post("/", upload.array("pdf-files"), async (req, res) => {
     }
     req.session.pdfFilesInfo = pdfFiles;
     res.redirect("/filters");
-  })();
+  };
+  await cur();
 });
 
 // PDF info array and page numbers arrays is read from the current session
