@@ -29,7 +29,7 @@ const merger = new PDFMerger();
 //Multer- path and new names of incoming files are configured
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/");
+    cb(null, "tmp/");
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + "-" + file.originalname);
