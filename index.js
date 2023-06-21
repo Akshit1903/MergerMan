@@ -110,6 +110,11 @@ app.get("/openpdf", (req, res) => {
 
 // Initial landing page
 app.get("/", (req, res) => {
+  // Check if folder exists
+  const folderPath = path.resolve(path.join(__dirname, "/tmp"));
+  if (!fs.existsSync(folderPath)) {
+    fs.mkdirSync(folderPath);
+  }
   res.render("index");
 });
 
