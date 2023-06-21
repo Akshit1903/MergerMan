@@ -42,19 +42,23 @@ const upload = multer({ storage: storage });
 // PDFs files are loaded onto the server
 // PDF info array is stored and info about the number of pages is added asynchronously
 app.post("/", upload.array("pdf-files"), (req, res) => {
-  const pdfFiles = req.files;
+  setTimeout(() => {
+    const pdfFiles = req.files;
 
-  // IIFE invoked as current scope cannot be async
-  (async () => {
-    for (let i = 0; i < pdfFiles.length; i++) {
-      // console.log(path.join(__dirname, pdfFiles[i].path));
-      let dataBuffer = fs.readFileSync(path.join(__dirname, pdfFiles[i].path));
-      let fileData = await pdfPageCounter(dataBuffer);
-      pdfFiles[i]["pages"] = fileData.numpages;
-    }
-    req.session.pdfFilesInfo = pdfFiles;
-    res.redirect("/filters");
-  })();
+    // IIFE invoked as current scope cannot be async
+    (async () => {
+      for (let i = 0; i < pdfFiles.length; i++) {
+        // console.log(path.join(__dirname, pdfFiles[i].path));
+        let dataBuffer = fs.readFileSync(
+          path.join(__dirname, pdfFiles[i].path)
+        );
+        let fileData = await pdfPageCounter(dataBuffer);
+        pdfFiles[i]["pages"] = fileData.numpages;
+      }
+      req.session.pdfFilesInfo = pdfFiles;
+      res.redirect("/filters");
+    })();
+  }, 8000);
 });
 
 // PDF info array and page numbers arrays is read from the current session
@@ -110,20 +114,10 @@ app.get("/openpdf", (req, res) => {
 
 // Initial landing page
 app.get("/", (req, res) => {
-  // Check if folder exists
-  const folderPath = path.resolve(path.join(__dirname, "/tmp"));
-  if (!fs.existsSync(folderPath)) {
-    fs.mkdirSync(folderPath);
-  }
   res.render("index");
 });
 
 app.listen(3000, () => {
-  // Check if folder exists
-  const folderPath = path.resolve(path.join(__dirname, "/tmp"));
-  if (!fs.existsSync(folderPath)) {
-    fs.mkdirSync(folderPath);
-  }
   console.log(`app listening on port 3000`);
 });
 
