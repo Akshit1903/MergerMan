@@ -29,7 +29,8 @@ const merger = new PDFMerger();
 //Multer- path and new names of incoming files are configured
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "tmp/");
+    const fullPath = path.join(__dirname, "/tmp");
+    cb(null, fullPath);
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + "-" + file.originalname);
@@ -63,15 +64,15 @@ app.post("/", upload.array("pdf-files"), async (req, res) => {
       // console.log(path.join(__dirname, pdfFiles[i].path));
       const pdfFilePath = path.join(__dirname, pdfFiles[i].path);
       // while (!fs.existsSync(pdfFilePath)) {}
-      if (fs.existsSync(pdfFilePath)) {
-        res.redirect("/filters");
-      }
-      // let dataBuffer = fs.readFileSync(pdfFilePath);
-      // let fileData = await pdfPageCounter(dataBuffer);
-      // pdfFiles[i]["pages"] = fileData.numpages;
+      // if (fs.existsSync(pdfFilePath)) {
+      //   res.redirect("/filters");
+      // }
+      let dataBuffer = fs.readFileSync(pdfFilePath);
+      let fileData = await pdfPageCounter(dataBuffer);
+      pdfFiles[i]["pages"] = fileData.numpages;
     }
-    // req.session.pdfFilesInfo = pdfFiles;
-    // res.redirect("/filters");
+    req.session.pdfFilesInfo = pdfFiles;
+    res.redirect("/filters");
   };
   await cur();
 });
