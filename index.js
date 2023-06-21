@@ -62,7 +62,7 @@ app.post("/", upload.array("pdf-files"), async (req, res) => {
     for (let i = 0; i < pdfFiles.length; i++) {
       // console.log(path.join(__dirname, pdfFiles[i].path));
       const pdfFilePath = path.join(__dirname, pdfFiles[i].path);
-      while (!fs.existsSync(pdfFilePath)) {}
+      // while (!fs.existsSync(pdfFilePath)) {}
       if (fs.existsSync(pdfFilePath)) {
         res.redirect("/filters");
       }
