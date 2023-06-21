@@ -29,11 +29,11 @@ const merger = new PDFMerger();
 //Multer- path and new names of incoming files are configured
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const fullPath = path.join(__dirname, "/tmp");
-    cb(null, fullPath);
+    cb(null, "tmp/");
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+    // cb(null, Date.now() + "-" + file.originalname);
+    cb(null, file.originalname);
   },
 });
 const upload = multer({ storage: storage });
@@ -62,17 +62,18 @@ app.post("/", upload.array("pdf-files"), async (req, res) => {
   const cur = async () => {
     for (let i = 0; i < pdfFiles.length; i++) {
       // console.log(path.join(__dirname, pdfFiles[i].path));
-      const pdfFilePath = path.join(__dirname, pdfFiles[i].path);
-      // while (!fs.existsSync(pdfFilePath)) {}
-      // if (fs.existsSync(pdfFilePath)) {
-      //   res.redirect("/filters");
-      // }
-      let dataBuffer = fs.readFileSync(pdfFilePath);
-      let fileData = await pdfPageCounter(dataBuffer);
-      pdfFiles[i]["pages"] = fileData.numpages;
+      const pdfFilePath = path.join(process.cwd(), pdfFiles[i].path);
+      if (fs.existsSync(pdfFilePath)) {
+        res.redirect("/filters");
+      }
+      while (!fs.existsSync(pdfFilePath)) {}
+
+      // let dataBuffer = fs.readFileSync(pdfFilePath);
+      // let fileData = await pdfPageCounter(dataBuffer);
+      // pdfFiles[i]["pages"] = fileData.numpages;
     }
-    req.session.pdfFilesInfo = pdfFiles;
-    res.redirect("/filters");
+    // req.session.pdfFilesInfo = pdfFiles;
+    // res.redirect("/filters");
   };
   await cur();
 });
