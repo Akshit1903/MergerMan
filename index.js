@@ -61,7 +61,9 @@ app.post("/", upload.array("pdf-files"), async (req, res) => {
   const cur = async () => {
     for (let i = 0; i < pdfFiles.length; i++) {
       // console.log(path.join(__dirname, pdfFiles[i].path));
-      let dataBuffer = fs.readFileSync(path.join(__dirname, pdfFiles[i].path));
+      const pdfFilePath = path.join(__dirname, pdfFiles[i].path);
+      while (!fs.existsSync(pdfFilePath)) {}
+      let dataBuffer = fs.readFileSync(pdfFilePath);
       let fileData = await pdfPageCounter(dataBuffer);
       pdfFiles[i]["pages"] = fileData.numpages;
     }
