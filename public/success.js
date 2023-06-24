@@ -6,4 +6,4 @@ const openMergedFile = () => {
   document.location.href = "/openpdf";
 };
 // setTimeout(downloadMergedFile, 2000);
-setTimeout(openMergedFile, 3000);
+setTimeout(openMergedFile, 500);
