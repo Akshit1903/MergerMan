@@ -11,20 +11,22 @@ const path = require("path");
 
 // Variables Initialized
 const app = express();
+var sess = {
+  secret: "SECRETKEY123",
+  cookie: {},
+  resave: false,
+  saveUninitialized: true,
+};
+if (app.get("env") === "production") {
+  app.set("trust proxy", 1); // trust first proxy
+  sess.cookie.secure = true; // serve secure cookies
+}
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "/public")));
 app.set("views", path.join(__dirname, "/views"));
 app.use(bodyParser.urlencoded({ extended: true }));
 // Express Session- config
-app.use(
-  session({
-    secret: "SECRETKEY123",
-    cookie: { maxAge: 60000 },
-    resave: false,
-    saveUninitialized: true,
-    // cookie: { secure: true },
-  })
-);
+app.use(session(sess));
 const merger = new PDFMerger();
 //Multer- path and new names of incoming files are configured
 const storage = multer.diskStorage({
@@ -74,8 +76,7 @@ app.post("/filters", (req, res) => {
   (async () => {
     // Concatenating all files one by one
     for (let i = 0; i < pdfFiles.length; i++) {
-      // const range = startingPageNumbers[i] + "-" + endingPageNumbers[i];
-      const range = "1-10";
+      const range = startingPageNumbers[i] + "-" + endingPageNumbers[i];
       await merger.add(pdfFiles[i].path, range);
     }
     await merger.save(`/tmp/merged.pdf`);
