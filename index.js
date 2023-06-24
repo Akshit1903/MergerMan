@@ -6,14 +6,13 @@ const fsp = require("fs/promises");
 const fs = require("fs");
 const PDFMerger = require("pdf-merger-js");
 const session = require("express-session");
-// const pdfPageCounter = require("pdf-page-counter");
 const path = require("path");
 
 // Variables Initialized
 const app = express();
 var sess = {
   secret: "SECRETKEY123",
-  cookie: {},
+  cookie: { maxAge: 60000 },
   resave: false,
   saveUninitialized: true,
 };
