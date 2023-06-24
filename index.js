@@ -68,6 +68,10 @@ app.post("/", upload.array("pdf-files"), async (req, res) => {
 // each PDF is added one by one w.r.t their page numbers
 app.post("/filters", (req, res) => {
   const pdfFiles = req.session.pdfFilesInfo;
+  if (!pdfFiles) {
+    res.send("error!");
+    return;
+  }
   const startingPageNumbers = req.body.startingPageNumbers;
   const endingPageNumbers = req.body.endingPageNumbers;
   console.log(pdfFiles);
