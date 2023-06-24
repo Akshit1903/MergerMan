@@ -69,7 +69,7 @@ app.post("/", upload.array("pdf-files"), async (req, res) => {
 app.post("/filters", (req, res) => {
   const pdfFiles = req.session.pdfFilesInfo;
   if (!pdfFiles) {
-    res.send("error!");
+    res.send("error2!");
     return;
   }
   const startingPageNumbers = req.body.startingPageNumbers;
@@ -100,9 +100,9 @@ app.post("/filters", (req, res) => {
 app.get("/filters", (req, res) => {
   const pdfFiles = req.session.pdfFilesInfo;
   if (!pdfFiles) {
-    res.send("error!");
-    return;
+    res.send("error1!");
   }
+  req.session.pdfFilesInfo = pdfFiles;
   res.render("filters", { pdfFiles: pdfFiles });
 });
 
