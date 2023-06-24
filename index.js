@@ -29,7 +29,7 @@ const merger = new PDFMerger();
 //Multer- path and new names of incoming files are configured
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "tmp/");
+    cb(null, "/tmp");
   },
   filename: (req, file, cb) => {
     // cb(null, Date.now() + "-" + file.originalname);
@@ -44,35 +44,21 @@ const upload = multer({ storage: storage });
 // PDF info array is stored and info about the number of pages is added asynchronously
 app.post("/", upload.array("pdf-files"), async (req, res) => {
   // setTimeout(async () => {
+
   // }, 8000);
-  // const pdfFiles = req.files;
+  const pdfFiles = req.files;
+
   // IIFE invoked as current scope cannot be async
-  // await (async () => {
-  //   for (let i = 0; i < pdfFiles.length; i++) {
-  //     // console.log(path.join(__dirname, pdfFiles[i].path));
-  //     let dataBuffer = fs.readFileSync(path.join(__dirname, pdfFiles[i].path));
-  //     let fileData = await pdfPageCounter(dataBuffer);
-  //     pdfFiles[i]["pages"] = fileData.numpages;
-  //   }
-  //   req.session.pdfFilesInfo = pdfFiles;
-  //   res.redirect("/filters");
-  // })();
-  // const cur = async () => {
-  //   for (let i = 0; i < pdfFiles.length; i++) {
-  //     // console.log(path.join(__dirname, pdfFiles[i].path));
-  //     const pdfFilePath = path.join(process.cwd(), pdfFiles[i].path);
-  //     if (fs.existsSync(pdfFilePath)) {
-  //       res.redirect("/filters");
-  //     }
-  //     while (!fs.existsSync(pdfFilePath)) {}
-  //     // let dataBuffer = fs.readFileSync(pdfFilePath);
-  //     // let fileData = await pdfPageCounter(dataBuffer);
-  //     // pdfFiles[i]["pages"] = fileData.numpages;
-  //   }
-  // req.session.pdfFilesInfo = pdfFiles;
-  // res.redirect("/filters");
-  // };
-  // await cur();
+  await (async () => {
+    for (let i = 0; i < pdfFiles.length; i++) {
+      // console.log(path.join(__dirname, pdfFiles[i].path));
+      let dataBuffer = fs.readFileSync(pdfFiles[i].path);
+      let fileData = await pdfPageCounter(dataBuffer);
+      pdfFiles[i]["pages"] = fileData.numpages;
+    }
+    req.session.pdfFilesInfo = pdfFiles;
+    res.redirect("/filters");
+  })();
 });
 
 // PDF info array and page numbers arrays is read from the current session
