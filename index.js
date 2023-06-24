@@ -6,6 +6,7 @@ const fsp = require("fs/promises");
 const fs = require("fs");
 const PDFMerger = require("pdf-merger-js");
 const session = require("express-session");
+
 // const pdfPageCounter = require("pdf-page-counter");
 const path = require("path");
 
@@ -77,7 +78,10 @@ app.post("/filters", (req, res) => {
       const range = startingPageNumbers[i] + "-" + endingPageNumbers[i];
       await merger.add(pdfFiles[i].path, range);
     }
-    await merger.save("merged.pdf");
+    const mergedPdfBuffer = await merger.saveAsBuffer();
+
+    fs.writeFileSync(`/tmp/merged.pdf`, mergedPdfBuffer);
+    // await merger.save("tmp/merged.pdf");
     for (let i = 0; i < pdfFiles.length; i++) {
       // Deleting files as no longer needed
       await fsp.unlink(pdfFiles[i].path);
@@ -107,7 +111,7 @@ app.get("/downloadpdf", (req, res) => {
 
 // Opens the generated PDF in the same tab.
 app.get("/openpdf", (req, res) => {
-  res.sendFile(path.join(__dirname, "merged.pdf"));
+  res.sendFile("/tmp/merged.pdf");
   // (async () => {
   //   await fsp.unlink("merged.pdf");
   // })();
@@ -115,6 +119,7 @@ app.get("/openpdf", (req, res) => {
 
 // Initial landing page
 app.get("/", (req, res) => {
+  console.log(require.main.filename);
   res.render("index");
 });
 
