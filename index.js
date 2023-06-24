@@ -6,7 +6,6 @@ const fsp = require("fs/promises");
 const fs = require("fs");
 const PDFMerger = require("pdf-merger-js");
 const session = require("express-session");
-
 // const pdfPageCounter = require("pdf-page-counter");
 const path = require("path");
 
@@ -78,10 +77,9 @@ app.post("/filters", (req, res) => {
       const range = startingPageNumbers[i] + "-" + endingPageNumbers[i];
       await merger.add(pdfFiles[i].path, range);
     }
-    const mergedPdfBuffer = await merger.saveAsBuffer();
-
-    fs.writeFileSync(`/tmp/merged.pdf`, mergedPdfBuffer);
-    // await merger.save("tmp/merged.pdf");
+    // const mergedPdfBuffer = await merger.saveAsBuffer();
+    // fs.writeFileSync(`/tmp/merged.pdf`, mergedPdfBuffer);
+    await merger.save(`/tmp/merged.pdf`);
     for (let i = 0; i < pdfFiles.length; i++) {
       // Deleting files as no longer needed
       await fsp.unlink(pdfFiles[i].path);
