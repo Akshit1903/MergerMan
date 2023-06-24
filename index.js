@@ -12,9 +12,10 @@ const path = require("path");
 const app = express();
 var sess = {
   secret: "SECRETKEY123",
-  cookie: { maxAge: 60000 },
-  resave: false,
-  saveUninitialized: true,
+  // cookie: { maxAge: 6000000 },
+  cookie: {},
+  // resave: false,
+  // saveUninitialized: true,
 };
 if (app.get("env") === "production") {
   app.set("trust proxy", 1); // trust first proxy
