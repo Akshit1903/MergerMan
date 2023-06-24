@@ -86,7 +86,7 @@ app.post("/filters", (req, res) => {
     }
     // Buffer is reset as sometimes previous session files were loaded
     merger.reset();
-    res.render("success");
+    res.download(`/tmp/merged.pdf`);
   })();
 });
 
@@ -104,7 +104,7 @@ app.get("/filters", (req, res) => {
 
 // Download process is started
 app.get("/downloadpdf", (req, res) => {
-  res.download(path.join(__dirname, "merged.pdf"));
+  res.download(`/tmp/merged.pdf`);
 });
 
 // Opens the generated PDF in the same tab.
