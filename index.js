@@ -74,7 +74,8 @@ app.post("/filters", (req, res) => {
   (async () => {
     // Concatenating all files one by one
     for (let i = 0; i < pdfFiles.length; i++) {
-      const range = startingPageNumbers[i] + "-" + endingPageNumbers[i];
+      // const range = startingPageNumbers[i] + "-" + endingPageNumbers[i];
+      const range = "1-10";
       await merger.add(pdfFiles[i].path, range);
     }
     await merger.save(`/tmp/merged.pdf`);
