@@ -14,8 +14,8 @@ var sess = {
   secret: "SECRETKEY123",
   cookie: { maxAge: 36000000 },
   cookie: {},
-  // resave: false,
-  // saveUninitialized: true,
+  resave: false,
+  saveUninitialized: true,
 };
 if (app.get("env") === "production") {
   app.set("trust proxy", 1); // trust first proxy
@@ -41,6 +41,10 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
+// Global array
+
+let pdfFiles = [];
+
 // POST REQUESTS
 
 // PDFs files are loaded onto the server
@@ -49,7 +53,7 @@ app.post("/", upload.array("pdf-files"), async (req, res) => {
   // setTimeout(async () => {
 
   // }, 8000);
-  const pdfFiles = req.files;
+  pdfFiles = req.files;
 
   // IIFE invoked as current scope cannot be async
   await (async () => {
@@ -60,7 +64,7 @@ app.post("/", upload.array("pdf-files"), async (req, res) => {
       // pdfFiles[i]["pages"] = fileData.numpages;
       pdfFiles[i]["pages"] = 10;
     }
-    req.session.pdfFilesInfo = pdfFiles;
+    // req.session.pdfFilesInfo = pdfFiles;
     res.redirect("/filters");
   })();
 });
@@ -68,14 +72,14 @@ app.post("/", upload.array("pdf-files"), async (req, res) => {
 // PDF info array and page numbers arrays is read from the current session
 // each PDF is added one by one w.r.t their page numbers
 app.post("/filters", (req, res) => {
-  const pdfFiles = req.session.pdfFilesInfo;
-  if (!pdfFiles) {
+  // const pdfFiles = req.session.pdfFilesInfo;
+  if (!pdfFiles || pdfFiles.length === 0) {
     res.send("error2!");
     return;
   }
   const startingPageNumbers = req.body.startingPageNumbers;
   const endingPageNumbers = req.body.endingPageNumbers;
-  console.log(pdfFiles);
+  // console.log(pdfFiles);
 
   // IIFE invoked because current scope can't be async
   (async () => {
@@ -91,6 +95,7 @@ app.post("/filters", (req, res) => {
     }
     // Buffer is reset as sometimes previous session files were loaded
     merger.reset();
+    pdfFiles = [];
     res.download(`/tmp/merged.pdf`);
   })();
 });
@@ -99,7 +104,7 @@ app.post("/filters", (req, res) => {
 // PDF files information object array is read from the current session
 // The array is used to render the filter route.
 app.get("/filters", (req, res) => {
-  const pdfFiles = req.session.pdfFilesInfo;
+  // const pdfFiles = req.session.pdfFilesInfo;
   if (!pdfFiles) {
     res.send("error1!");
   }
