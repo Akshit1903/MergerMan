@@ -117,7 +117,7 @@ app.post("/filters", (req, res) => {
     merger.reset();
     req.session.pdfFilesInfo = [];
     deleteMergedPDF();
-    res.redirect("openpdf");
+    res.render("success");
   })();
 });
 
