@@ -12,7 +12,7 @@ const path = require("path");
 const app = express();
 var sess = {
   secret: "SECRETKEY123",
-  // cookie: { maxAge: 6000000 },
+  cookie: { maxAge: 36000000 },
   cookie: {},
   // resave: false,
   // saveUninitialized: true,
@@ -21,12 +21,13 @@ if (app.get("env") === "production") {
   app.set("trust proxy", 1); // trust first proxy
   sess.cookie.secure = true; // serve secure cookies
 }
+// Express Session- config
+app.use(session(sess));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "/public")));
 app.set("views", path.join(__dirname, "/views"));
 app.use(bodyParser.urlencoded({ extended: true }));
-// Express Session- config
-app.use(session(sess));
+
 const merger = new PDFMerger();
 //Multer- path and new names of incoming files are configured
 const storage = multer.diskStorage({
@@ -102,7 +103,6 @@ app.get("/filters", (req, res) => {
   if (!pdfFiles) {
     res.send("error1!");
   }
-  req.session.pdfFilesInfo = pdfFiles;
   res.render("filters", { pdfFiles: pdfFiles });
 });
 
