@@ -41,20 +41,12 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// Global array- sessions not working correctly on vercel
-// (due to this app converted to stateless function)
-let pdfFiles = [];
-
 // POST REQUESTS
 
 // PDFs files are loaded onto the server
 // PDF info array is stored and info about the number of pages is added asynchronously
 app.post("/", upload.array("pdf-files"), async (req, res) => {
-  // setTimeout(async () => {
-
-  // }, 8000);
-  pdfFiles = req.files;
-
+  const pdfFiles = req.files;
   // IIFE invoked as current scope cannot be async
   await (async () => {
     for (let i = 0; i < pdfFiles.length; i++) {
@@ -62,8 +54,25 @@ app.post("/", upload.array("pdf-files"), async (req, res) => {
       const pdfFilePages = await countPages.PdfCounter.count(pdfBuffer);
       pdfFiles[i]["pages"] = pdfFilePages;
     }
-    // req.session.pdfFilesInfo = pdfFiles;
-    res.redirect("/filters");
+    if (req.body.submit === "Quick Merge") {
+      (async () => {
+        for (let i = 0; i < pdfFiles.length; i++) {
+          await merger.add(pdfFiles[i].path);
+        }
+        await merger.save(`/tmp/merged.pdf`);
+        for (let i = 0; i < pdfFiles.length; i++) {
+          // Deleting files as no longer needed
+          await fsp.unlink(pdfFiles[i].path);
+        }
+        // Buffer is reset as sometimes previous session files were loaded
+        merger.reset();
+        deleteMergedPDF();
+        res.render("success");
+      })();
+    } else {
+      req.session.pdfFilesInfo = pdfFiles;
+      res.redirect("/filters");
+    }
   })();
 });
 
@@ -79,7 +88,7 @@ const deleteMergedPDF = () => {
 // PDF info array and page numbers arrays is read from the current session
 // each PDF is added one by one w.r.t their page numbers
 app.post("/filters", (req, res) => {
-  // const pdfFiles = req.session.pdfFilesInfo;
+  const pdfFiles = req.session.pdfFilesInfo;
   if (!pdfFiles || pdfFiles.length === 0) {
     res.render("failure");
     return;
@@ -106,7 +115,7 @@ app.post("/filters", (req, res) => {
     }
     // Buffer is reset as sometimes previous session files were loaded
     merger.reset();
-    pdfFiles = [];
+    req.session.pdfFilesInfo = [];
     deleteMergedPDF();
     res.render("success");
   })();
@@ -116,7 +125,7 @@ app.post("/filters", (req, res) => {
 // PDF files information object array is read from the current session
 // The array is used to render the filter route.
 app.get("/filters", (req, res) => {
-  // const pdfFiles = req.session.pdfFilesInfo;
+  const pdfFiles = req.session.pdfFilesInfo;
   if (!pdfFiles || pdfFiles.length === 0) {
     res.render("failure");
   } else {
@@ -149,7 +158,7 @@ app.get("/about", (req, res) => {
 
 // Initial landing page
 app.get("/", (req, res) => {
-  pdfFiles = [];
+  req.session.pdfFilesInfo = [];
   res.render("index");
 });
 

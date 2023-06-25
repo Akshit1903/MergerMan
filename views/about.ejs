@@ -1,8 +1,12 @@
 <%- include('header'); -%>
 <div class="container my-5">
     <div class="p-5 text-center bg-body-tertiary rounded-3">
+      <p class="placeholder-glow" id="loader">
+        Fetching, please wait...
+        <span class="placeholder col-12"></span>
+      </p>
       <p class="lead">
-        <div class="m-5 text-start"><md-block id="readme-content-box"></md-block></div>
+        <div class="m-5 text-start"><md-block class="d-none" id="readme-content-box">Loading...</md-block></div>
       </p>
     </div>
   </div>
