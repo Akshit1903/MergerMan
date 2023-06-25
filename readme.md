@@ -5,6 +5,7 @@ MergerMan is a simple, minimal yet robust and efficient PDF merger application t
 ## Features
 
 - Merge multiple PDF files into a single PDF document.
+- Session management which enables the server to process multiple users concurrently.
 - User-friendly interface for selecting the PDF files.
 - Ability to enter the desired range of page numbers of individual PDF file.
 - Option to preview the merged PDF document before saving.
