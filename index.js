@@ -7,6 +7,7 @@ const fs = require("fs");
 const PDFMerger = require("pdf-merger-js");
 const session = require("express-session");
 const path = require("path");
+const pdfPageCounter = require("pdf-page-counter");
 
 // Variables Initialized
 const app = express();
@@ -59,10 +60,10 @@ app.post("/", upload.array("pdf-files"), async (req, res) => {
   await (async () => {
     for (let i = 0; i < pdfFiles.length; i++) {
       // console.log(path.join(__dirname, pdfFiles[i].path));
-      // let dataBuffer = fs.readFileSync(pdfFiles[i].path);
-      // let fileData = await pdfPageCounter(dataBuffer);
-      // pdfFiles[i]["pages"] = fileData.numpages;
-      pdfFiles[i]["pages"] = 10;
+      let dataBuffer = fs.readFileSync(pdfFiles[i].path);
+      let fileData = await pdfPageCounter(dataBuffer);
+      pdfFiles[i]["pages"] = fileData.numpages;
+      // pdfFiles[i]["pages"] = 10;
     }
     // req.session.pdfFilesInfo = pdfFiles;
     res.redirect("/filters");
