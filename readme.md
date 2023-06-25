@@ -11,6 +11,9 @@ MergerMan is a simple, minimal yet robust and efficient PDF merger application t
 - Option to preview the merged PDF document before saving.
 - Easy-to-use and intuitive design.
 
+<img src="./public/assets/mm1.gif" width="600px" height="auto" />
+<img src="./public/assets/mm2.gif" width="600px"height="auto" />
+
 ## Installation
 
 To run the PDF Merger App locally, follow these steps:
