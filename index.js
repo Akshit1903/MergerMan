@@ -72,7 +72,7 @@ const deleteMergedPDF = () => {
     if (fs.existsSync(`/tmp/merged.pdf`)) {
       await fsp.unlink(`/tmp/merged.pdf`);
     }
-  }, 5000);
+  }, 10000);
 };
 
 // PDF info array and page numbers arrays is read from the current session
@@ -148,6 +148,7 @@ app.get("/about", (req, res) => {
 
 // Initial landing page
 app.get("/", (req, res) => {
+  pdfFiles = [];
   res.render("index");
 });
 
