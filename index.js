@@ -35,14 +35,13 @@ const storage = multer.diskStorage({
     cb(null, "/tmp");
   },
   filename: (req, file, cb) => {
-    // cb(null, Date.now() + "-" + file.originalname);
-    cb(null, file.originalname);
+    cb(null, Date.now() + "-" + file.originalname);
   },
 });
 const upload = multer({ storage: storage });
 
-// Global array
-
+// Global array- sessions not working correctly on vercel
+// (due to this app converted to stateless function)
 let pdfFiles = [];
 
 // POST REQUESTS
@@ -58,13 +57,6 @@ app.post("/", upload.array("pdf-files"), async (req, res) => {
   // IIFE invoked as current scope cannot be async
   await (async () => {
     for (let i = 0; i < pdfFiles.length; i++) {
-      // console.log(path.join(__dirname, pdfFiles[i].path));
-      // const pdfFilePages = await pdfjsLib.getDocument(pdfFiles[i].path)
-      //   .numpages;
-      // pdfFiles[i]["pages"] = pdfFilePages;
-      // pdfjsLib.getDocument(pdfFiles[i].path).then(function (doc) {
-      //   pdfFiles[i]["pages"] = doc.numPages;
-      // });
       const pdfBuffer = fs.readFileSync(pdfFiles[i].path);
       const pdfFilePages = await countPages.PdfCounter.count(pdfBuffer);
       pdfFiles[i]["pages"] = pdfFilePages;
@@ -74,24 +66,37 @@ app.post("/", upload.array("pdf-files"), async (req, res) => {
   })();
 });
 
+// Function to clean user files after they're sent
+const deleteMergedPDF = () => {
+  setTimeout(async () => {
+    if (fs.existsSync(`/tmp/merged.pdf`)) {
+      await fsp.unlink(`/tmp/merged.pdf`);
+    }
+  }, 5000);
+};
+
 // PDF info array and page numbers arrays is read from the current session
 // each PDF is added one by one w.r.t their page numbers
 app.post("/filters", (req, res) => {
   // const pdfFiles = req.session.pdfFilesInfo;
   if (!pdfFiles || pdfFiles.length === 0) {
-    res.send("error2!");
+    res.render("failure");
     return;
   }
   const startingPageNumbers = req.body.startingPageNumbers;
   const endingPageNumbers = req.body.endingPageNumbers;
-  // console.log(pdfFiles);
-
   // IIFE invoked because current scope can't be async
   (async () => {
-    // Concatenating all files one by one
-    for (let i = 0; i < pdfFiles.length; i++) {
-      const range = startingPageNumbers[i] + "-" + endingPageNumbers[i];
-      await merger.add(pdfFiles[i].path, range);
+    if (pdfFiles.length === 1) {
+      // A number is sent by POST request when one field is present
+      const range = startingPageNumbers + "-" + endingPageNumbers;
+      await merger.add(pdfFiles[0].path, range);
+    } else {
+      // Concatenating all files one by one
+      for (let i = 0; i < pdfFiles.length; i++) {
+        const range = startingPageNumbers[i] + "-" + endingPageNumbers[i];
+        await merger.add(pdfFiles[i].path, range);
+      }
     }
     await merger.save(`/tmp/merged.pdf`);
     for (let i = 0; i < pdfFiles.length; i++) {
@@ -101,7 +106,8 @@ app.post("/filters", (req, res) => {
     // Buffer is reset as sometimes previous session files were loaded
     merger.reset();
     pdfFiles = [];
-    res.download(`/tmp/merged.pdf`);
+    deleteMergedPDF();
+    res.render("success");
   })();
 });
 
@@ -110,23 +116,34 @@ app.post("/filters", (req, res) => {
 // The array is used to render the filter route.
 app.get("/filters", (req, res) => {
   // const pdfFiles = req.session.pdfFilesInfo;
-  if (!pdfFiles) {
-    res.send("error1!");
+  if (!pdfFiles || pdfFiles.length === 0) {
+    res.render("failure");
+  } else {
+    res.render("filters", { pdfFiles: pdfFiles });
   }
-  res.render("filters", { pdfFiles: pdfFiles });
 });
 
 // Download process is started
 app.get("/downloadpdf", (req, res) => {
-  res.download(`/tmp/merged.pdf`);
+  if (fs.existsSync(`/tmp/merged.pdf`)) {
+    res.download(`/tmp/merged.pdf`);
+  } else {
+    res.render("failure");
+  }
 });
 
 // Opens the generated PDF in the same tab.
 app.get("/openpdf", (req, res) => {
-  res.sendFile(`/tmp/merged.pdf`);
-  // (async () => {
-  //   await fsp.unlink("merged.pdf");
-  // })();
+  if (fs.existsSync(`/tmp/merged.pdf`)) {
+    res.sendFile(`/tmp/merged.pdf`);
+  } else {
+    res.render("failure");
+  }
+});
+
+// Opens the about readme fetched from github
+app.get("/about", (req, res) => {
+  res.render("about");
 });
 
 // Initial landing page

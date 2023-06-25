@@ -1,12 +1,5 @@
 // IIFE- Immediately Invoked Function Expression used here
 
-// const validateFilterRangeEnd = () => {
-//   return
-// };
-// const validateFilterRangeStart = () => {
-
-// };
-
 (() => {
   "use strict";
   const forms = document.querySelectorAll(".needs-validation");
@@ -43,10 +36,20 @@
             errBox.classList.add("invisible");
           }, 3000);
         }
-        // this class is added regardless of whether we have attached PDF or not
         form.classList.add("was-validated");
       },
       false
     );
   });
 })();
+
+// Add some additional configurations to submit button WITHOUT losing post request functionality
+
+// const submitButton = document.getElementById("submit-btn");
+// submitButton.onclick = (e) => {
+//   submitButton.setAttribute("disabled", true);
+//   const openSuccessPage = () => {
+//     document.location.href = "/success";
+//   };
+//   setTimeout(openSuccessPage, 500);
+// };

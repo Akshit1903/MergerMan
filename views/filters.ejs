@@ -2,63 +2,66 @@
 <div id="error-box" class="alert alert-danger invisible" role="alert">
   Please fill the page indexes carefully!
 </div>
-<div class="upload-box card">
-  <div class="card-header">Select Page Indexes</div>
-  <div class="card-body">
-    <h5 class="card-title">Specify which pages you want in your final PDF</h5>
-    <p class="card-text">Give the ranges to your uploaded PDFs.</p>
-    <form
-      class="needs-validation"
-      action="/filters"
-      method="post"
-      
-    >
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">PDF File Name</th>
-            <th scope="col">First Page</th>
-            <th scope="col">Last Page</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% for(let i=0;i<pdfFiles.length;i++){ %>
-      <tr>
-        <td><%=   pdfFiles[i].originalname %></td>
-        <td>
-          <output>1</output>
-          <input
-            type="range"
-            class="form-range start-index"
-            min="1"
-            max=<%=   pdfFiles[i].pages %>
-            step="1"
-            value="1"
-            oninput="this.previousElementSibling.value = this.value"
-            name="startingPageNumbers"
-          />
-        </td>
-        <td>
-          <output><%= pdfFiles[i].pages %></output>
-          <input
-            type="range"
-            class="form-range end-index"
-            min="1"
-            max=<%=   pdfFiles[i].pages %>
-            step="1"
-            value=<%=   pdfFiles[i].pages %>
-            oninput="this.previousElementSibling.value = this.value"
-            name="endingPageNumbers"
-          />
-        </td>
-      </tr>
-      <% } %>
-          
-        </tbody>
-      </table>
-      <input type="submit" class="btn btn-secondary btn-lg" value="Proceed"/>
-    </form>
+<div class="container px-3">
+  <div class="upload-box card text-center">
+    <div class="card-header">Select Page Indexes</div>
+    <div class="card-body">
+      <h5 class="card-title">Specify which pages you want in your final PDF</h5>
+      <p class="card-text">Give the ranges to your uploaded PDFs.</p>
+      <form
+        class="needs-validation"
+        action="/filters"
+        method="post"
+        
+      >
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">PDF File Name</th>
+              <th scope="col">First Page</th>
+              <th scope="col">Last Page</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for(let i=0;i<pdfFiles.length;i++){ %>
+        <tr>
+          <td><%=   pdfFiles[i].originalname %></td>
+          <td>
+            <output>1</output>
+            <input
+              type="range"
+              class="form-range start-index"
+              min="1"
+              max=<%=   pdfFiles[i].pages %>
+              step="1"
+              value="1"
+              oninput="this.previousElementSibling.value = this.value"
+              name="startingPageNumbers"
+            />
+          </td>
+          <td>
+            <output><%= pdfFiles[i].pages %></output>
+            <input
+              type="range"
+              class="form-range end-index"
+              min="1"
+              max=<%=   pdfFiles[i].pages %>
+              step="1"
+              value=<%=   pdfFiles[i].pages %>
+              oninput="this.previousElementSibling.value = this.value"
+              name="endingPageNumbers"
+            />
+          </td>
+        </tr>
+        <% } %>
+            
+          </tbody>
+        </table>
+        <input id="submit-btn" type="submit" class="btn btn-secondary btn-lg" value="Proceed"/>
+      </form>
+    </div>
   </div>
 </div>
+
 <script src="./filters.js"></script>
 <%- include('footer'); -%>
