@@ -18,6 +18,7 @@
     "page-count": "0.0.2",
     "pdf-merger-js": "^4.3.0",
     "pdf-page-counter": "^1.0.3",
-    "pdfjs-dist": "^3.7.107"
+    "pdfjs-dist": "^3.7.107",
+    "serverless-http": "^3.2.0"
   }
 }

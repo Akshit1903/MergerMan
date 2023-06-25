@@ -8,6 +8,7 @@ const PDFMerger = require("pdf-merger-js");
 const session = require("express-session");
 const path = require("path");
 const countPages = require("page-count");
+const serverless = require("serverless-http");
 // Variables Initialized
 const app = express();
 var sess = {
@@ -156,4 +157,4 @@ app.listen(3000, () => {
   console.log(`app listening on port 3000`);
 });
 
-module.exports = app;
+module.exports.handler = serverless(app);
