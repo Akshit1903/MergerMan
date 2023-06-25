@@ -1,6 +1,9 @@
 # MergerMan
 
 MergerMan is a simple, minimal yet robust and efficient PDF merger application that merges two or more PDF file into one PDF file; developed using EJS, Express, and Node.js. The application allows users to merge multiple PDF files into a single PDF document.
+<br/>
+
+<a href="https://youtu.be/A-LjRjullyg">YouTube</a>
 
 ## Features
 
