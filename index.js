@@ -67,7 +67,7 @@ app.post("/", upload.array("pdf-files"), async (req, res) => {
         // Buffer is reset as sometimes previous session files were loaded
         merger.reset();
         deleteMergedPDF();
-        res.render("success");
+        res.redirect("openpdf");
       })();
     } else {
       req.session.pdfFilesInfo = pdfFiles;
@@ -117,7 +117,7 @@ app.post("/filters", (req, res) => {
     merger.reset();
     req.session.pdfFilesInfo = [];
     deleteMergedPDF();
-    res.render("success");
+    res.redirect("openpdf");
   })();
 });
 
