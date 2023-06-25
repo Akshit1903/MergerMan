@@ -1,1 +1,3 @@
-document.location.href = "/downloadpdf";
+setTimeout(() => {
+  document.location.href = "/downloadpdf";
+}, 0);
