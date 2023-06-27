@@ -75,30 +75,30 @@ const merger = new PDFMerger();
 //Multer- path and new names of incoming files are configured
 
 // This code saves the files on disk
-// const storageOnDisk = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "/tmp");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, Date.now() + "-" + file.originalname);
-//   },
-// });
-
-// This code saves the files on mongoDB server
-const storageOnServer = new GridFsStorage({
-  url: mongoStorageURI,
-  file: (req, file) => {
-    return new Promise((resolve, reject) => {
-      const filename = Date.now() + "-" + file.originalname;
-      const fileInfo = {
-        filename: filename,
-        bucketName: "uploads",
-      };
-      resolve(fileInfo);
-    });
+const storageOnDisk = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "/tmp");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
   },
 });
-const upload = multer({ storage: storageOnServer });
+
+// This code saves the files on mongoDB server
+// const storageOnServer = new GridFsStorage({
+//   url: mongoStorageURI,
+//   file: (req, file) => {
+//     return new Promise((resolve, reject) => {
+//       const filename = Date.now() + "-" + file.originalname;
+//       const fileInfo = {
+//         filename: filename,
+//         bucketName: "uploads",
+//       };
+//       resolve(fileInfo);
+//     });
+//   },
+// });
+const upload = multer({ storage: storageOnDisk });
 
 // pdfFile structure
 // {
@@ -149,25 +149,24 @@ app.post("/", upload.array("pdf-files"), (req, res) => {
   (async () => {
     const pdfFiles = req.files;
     for (let i = 0; i < pdfFiles.length; i++) {
-      const pdfFilePath = "\\tmp/" + pdfFiles[i].filename;
-      // open a stream to the mongoDB server
-      const downloadStream = await bucket.openDownloadStream(
-        ObjectId(pdfFiles[i].id)
-      );
-      // write to our server from the open stream
-      // await writeFile(downloadStream, pdfFilePath);
-      await new Promise((resolve, reject) => {
-        downloadStream.pipe(
-          fs
-            .createWriteStream(pdfFilePath)
-            .on("finish", () => {
-              resolve(true);
-            })
-            .on("error", reject)
-        );
-      });
-      // console.log(fs.existsSync(pdfFilePath));
-      pdfFiles[i].path = pdfFilePath;
+      // const pdfFilePath = "\\tmp/" + pdfFiles[i].filename;
+      // // open a stream to the mongoDB server
+      // const downloadStream = await bucket.openDownloadStream(
+      //   ObjectId(pdfFiles[i].id)
+      // );
+      // // write to our server from the open stream
+      // // await writeFile(downloadStream, pdfFilePath);
+      // await new Promise((resolve, reject) => {
+      //   downloadStream.pipe(
+      //     fs
+      //       .createWriteStream(pdfFilePath)
+      //       .on("finish", () => {
+      //         resolve(true);
+      //       })
+      //       .on("error", reject)
+      //   );
+      // });
+      // pdfFiles[i].path = pdfFilePath;
       // count the pages from the temporary copy of file
       // setTimeout(async () => {
       //   const pdfBuffer = await fsp.readFile(pdfFiles[i].path);
@@ -182,22 +181,22 @@ app.post("/", upload.array("pdf-files"), (req, res) => {
     if (req.body.submit === "Quick Merge") {
       (async () => {
         for (let i = 0; i < pdfFiles.length; i++) {
-          if (!fs.existsSync(pdfFiles[i].path)) {
-            const downloadStream = await bucket.openDownloadStream(
-              ObjectId(pdfFiles[i].id)
-            );
-            // await writeFile(downloadStream, pdfFiles[i].path);
-            await new Promise((resolve, reject) => {
-              downloadStream.pipe(
-                fs
-                  .createWriteStream(pdfFiles[i].path)
-                  .on("finish", () => {
-                    resolve(true);
-                  })
-                  .on("error", reject)
-              );
-            });
-          }
+          // if (!fs.existsSync(pdfFiles[i].path)) {
+          //   const downloadStream = await bucket.openDownloadStream(
+          //     ObjectId(pdfFiles[i].id)
+          //   );
+          //   // await writeFile(downloadStream, pdfFiles[i].path);
+          //   await new Promise((resolve, reject) => {
+          //     downloadStream.pipe(
+          //       fs
+          //         .createWriteStream(pdfFiles[i].path)
+          //         .on("finish", () => {
+          //           resolve(true);
+          //         })
+          //         .on("error", reject)
+          //     );
+          //   });
+          // }
           await merger.add(pdfFiles[i].path);
         }
         await merger.save(`/tmp/merged.pdf`);
@@ -249,30 +248,30 @@ app.post("/filters", (req, res) => {
     } else {
       // Concatenating all files one by one
       for (let i = 0; i < pdfFiles.length; i++) {
-        if (!fs.existsSync(pdfFiles[i].path)) {
-          // res.render("failure", { errorMessage: "One of user files lost" });
-          const pdfFilePath = "\\tmp/" + pdfFiles[i].filename;
-          // open a stream to the mongoDB server
-          const downloadStream = await bucket.openDownloadStream(
-            ObjectId(pdfFiles[i].id)
-          );
-          // write to our server from the open stream
-          // await writeFile(downloadStream, pdfFilePath);
-          await new Promise((resolve, reject) => {
-            downloadStream.pipe(
-              fs
-                .createWriteStream(pdfFilePath)
-                .on("finish", () => {
-                  resolve(true);
-                })
-                .on("error", reject)
-            );
-          });
-        }
+        // if (!fs.existsSync(pdfFiles[i].path)) {
+        //   // res.render("failure", { errorMessage: "One of user files lost" });
+        //   const pdfFilePath = "\\tmp/" + pdfFiles[i].filename;
+        //   // open a stream to the mongoDB server
+        //   const downloadStream = await bucket.openDownloadStream(
+        //     ObjectId(pdfFiles[i].id)
+        //   );
+        //   // write to our server from the open stream
+        //   // await writeFile(downloadStream, pdfFilePath);
+        //   await new Promise((resolve, reject) => {
+        //     downloadStream.pipe(
+        //       fs
+        //         .createWriteStream(pdfFilePath)
+        //         .on("finish", () => {
+        //           resolve(true);
+        //         })
+        //         .on("error", reject)
+        //     );
+        //   });
+        // }
         const range = startingPageNumbers[i] + "-" + endingPageNumbers[i];
         await merger.add(pdfFiles[i].path, range);
         // delete the files locally and from database since they're used
-        await bucket.delete(ObjectId(pdfFiles[i].id));
+        // await bucket.delete(ObjectId(pdfFiles[i].id));
         if (fs.existsSync(pdfFiles[i].path)) {
           await fsp.unlink(pdfFiles[i].path);
         }
