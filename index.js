@@ -165,14 +165,6 @@ app.get("/about", (req, res) => {
   res.render("about");
 });
 
-// app.get("/console", (req, res) => {
-//   if (store.serverStatus === undefined) {
-//     res.send("undefined");
-//   } else {
-//     res.send(store.serverStatus);
-//   }
-// });
-
 // Initial landing page
 app.get("/", (req, res) => {
   res.render("index");
@@ -182,4 +174,4 @@ app.listen(3000, () => {
   console.log(`app listening on port 3000`);
 });
 
-module.exports = app;
+module.exports.handler = serverless(app);
