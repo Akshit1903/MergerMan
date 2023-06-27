@@ -13,17 +13,17 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 // Variables Initialized
 const app = express();
 // configure MongoDB Database
-const store = new MongoDBStore({
-  uri: "mongodb+srv://akshit19:sGUuwKTtlK3znU4R@mergermancluster.3l1agd0.mongodb.net/",
-  collection: "sessions",
-});
+// const store = new MongoDBStore({
+//   uri: "mongodb+srv://akshit19:sGUuwKTtlK3znU4R@mergermancluster.3l1agd0.mongodb.net/",
+//   collection: "sessions",
+// });
 var sess = {
   secret: "SECRETKEY123",
   cookie: { maxAge: 36000000 },
   cookie: {},
   resave: false,
   saveUninitialized: true,
-  store: store,
+  // store: store,
 };
 if (app.get("env") === "production") {
   app.set("trust proxy", 1); // trust first proxy
