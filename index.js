@@ -24,16 +24,16 @@ const app = express();
 mongoose.set("strictQuery", true);
 // configure MongoDB Database
 const store = new MongoDBStore({
-  // uri: "mongodb://localhost:27017/user-session-db",
-  uri: `mongodb+srv://${process.env.MONGO_USERNAME_PASSWORD}@mergermancluster.3l1agd0.mongodb.net/user-session-db`,
+  uri: "mongodb://localhost:27017/user-session-db",
+  // uri: `mongodb+srv://${process.env.MONGO_USERNAME_PASSWORD}@mergermancluster.3l1agd0.mongodb.net/user-session-db`,
   collection: "sessions",
 });
 // const client = new MongoClient("mongodb://localhost:27017/user-files-db", {
 //   useNewUrlParser: true,
 //   useUnifiedTopology: true,
 // });
-// const mongoStorageURI = "mongodb://localhost:27017/user-files-db";
-const mongoStorageURI = `mongodb+srv://${process.env.MONGO_USERNAME_PASSWORD}@mergermancluster.3l1agd0.mongodb.net/user-files-db`;
+const mongoStorageURI = "mongodb://localhost:27017/user-files-db";
+// const mongoStorageURI = `mongodb+srv://${process.env.MONGO_USERNAME_PASSWORD}@mergermancluster.3l1agd0.mongodb.net/user-files-db`;
 mongoose.connect(mongoStorageURI, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
@@ -130,18 +130,18 @@ const upload = multer({ storage: storageOnServer });
 // POST REQUESTS
 
 // we wait for the files to finish downloading from the mongoDB server
-async function writeFile(downloadStream, pdfFilePath) {
-  return new Promise((resolve, reject) => {
-    downloadStream.pipe(
-      fs
-        .createWriteStream(pdfFilePath)
-        .on("finish", () => {
-          resolve(true);
-        })
-        .on("error", reject)
-    );
-  });
-}
+// async function writeFile(downloadStream, pdfFilePath) {
+//   return new Promise((resolve, reject) => {
+//     downloadStream.pipe(
+//       fs
+//         .createWriteStream(pdfFilePath)
+//         .on("finish", () => {
+//           resolve(true);
+//         })
+//         .on("error", reject)
+//     );
+//   });
+// }
 // PDFs files are sent to the database server, then loaded onto the server
 // PDF info array is stored and info about the number of pages is added asynchronously
 app.post("/", upload.array("pdf-files"), (req, res) => {
@@ -155,7 +155,18 @@ app.post("/", upload.array("pdf-files"), (req, res) => {
         ObjectId(pdfFiles[i].id)
       );
       // write to our server from the open stream
-      await writeFile(downloadStream, pdfFilePath);
+      // await writeFile(downloadStream, pdfFilePath);
+      await new Promise((resolve, reject) => {
+        downloadStream.pipe(
+          fs
+            .createWriteStream(pdfFilePath)
+            .on("finish", () => {
+              resolve(true);
+            })
+            .on("error", reject)
+        );
+      });
+      // console.log(fs.existsSync(pdfFilePath));
       pdfFiles[i].path = pdfFilePath;
       // count the pages from the temporary copy of file
       const pdfBuffer = await fsp.readFile(pdfFiles[i].path);
@@ -170,7 +181,17 @@ app.post("/", upload.array("pdf-files"), (req, res) => {
             const downloadStream = await bucket.openDownloadStream(
               ObjectId(pdfFiles[i].id)
             );
-            await writeFile(downloadStream, pdfFiles[i].path);
+            // await writeFile(downloadStream, pdfFiles[i].path);
+            await new Promise((resolve, reject) => {
+              downloadStream.pipe(
+                fs
+                  .createWriteStream(pdfFiles[i].path)
+                  .on("finish", () => {
+                    resolve(true);
+                  })
+                  .on("error", reject)
+              );
+            });
           }
           await merger.add(pdfFiles[i].path);
         }
@@ -231,7 +252,17 @@ app.post("/filters", (req, res) => {
             ObjectId(pdfFiles[i].id)
           );
           // write to our server from the open stream
-          await writeFile(downloadStream, pdfFilePath);
+          // await writeFile(downloadStream, pdfFilePath);
+          await new Promise((resolve, reject) => {
+            downloadStream.pipe(
+              fs
+                .createWriteStream(pdfFilePath)
+                .on("finish", () => {
+                  resolve(true);
+                })
+                .on("error", reject)
+            );
+          });
         }
         const range = startingPageNumbers[i] + "-" + endingPageNumbers[i];
         await merger.add(pdfFiles[i].path, range);
