@@ -169,6 +169,11 @@ app.post("/", upload.array("pdf-files"), (req, res) => {
       // console.log(fs.existsSync(pdfFilePath));
       pdfFiles[i].path = pdfFilePath;
       // count the pages from the temporary copy of file
+      // setTimeout(async () => {
+      //   const pdfBuffer = await fsp.readFile(pdfFiles[i].path);
+      //   const pdfFilePages = await countPages.PdfCounter.count(pdfBuffer);
+      //   pdfFiles[i].pages = pdfFilePages;
+      // }, 1000);
       const pdfBuffer = await fsp.readFile(pdfFiles[i].path);
       const pdfFilePages = await countPages.PdfCounter.count(pdfBuffer);
       pdfFiles[i].pages = pdfFilePages;
