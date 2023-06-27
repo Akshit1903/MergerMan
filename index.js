@@ -24,16 +24,16 @@ const app = express();
 mongoose.set("strictQuery", true);
 // configure MongoDB Database
 const store = new MongoDBStore({
-  uri: "mongodb://localhost:27017/user-session-db",
-  // uri: `mongodb+srv://${process.env.MONGO_USERNAME_PASSWORD}@mergermancluster.3l1agd0.mongodb.net/user-session-db`,
+  // uri: "mongodb://localhost:27017/user-session-db",
+  uri: `mongodb+srv://${process.env.MONGO_USERNAME_PASSWORD}@mergermancluster.3l1agd0.mongodb.net/user-session-db`,
   collection: "sessions",
 });
 // const client = new MongoClient("mongodb://localhost:27017/user-files-db", {
 //   useNewUrlParser: true,
 //   useUnifiedTopology: true,
 // });
-const mongoStorageURI = "mongodb://localhost:27017/user-files-db";
-// const mongoStorageURI = `mongodb+srv://${process.env.MONGO_USERNAME_PASSWORD}@mergermancluster.3l1agd0.mongodb.net/user-files-db`;
+// const mongoStorageURI = "mongodb://localhost:27017/user-files-db";
+const mongoStorageURI = `mongodb+srv://${process.env.MONGO_USERNAME_PASSWORD}@mergermancluster.3l1agd0.mongodb.net/user-files-db`;
 mongoose.connect(mongoStorageURI, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
