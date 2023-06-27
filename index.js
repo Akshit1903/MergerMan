@@ -75,14 +75,14 @@ const merger = new PDFMerger();
 //Multer- path and new names of incoming files are configured
 
 // This code saves the files on disk
-const storageOnDisk = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "/tmp");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
+// const storageOnDisk = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "/tmp");
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + "-" + file.originalname);
+//   },
+// });
 
 // This code saves the files on mongoDB server
 const storageOnServer = new GridFsStorage({
@@ -166,16 +166,24 @@ app.post("/", upload.array("pdf-files"), (req, res) => {
     if (req.body.submit === "Quick Merge") {
       (async () => {
         for (let i = 0; i < pdfFiles.length; i++) {
+          if (!fs.existsSync(pdfFiles[i].path)) {
+            const downloadStream = await bucket.openDownloadStream(
+              ObjectId(pdfFiles[i].id)
+            );
+            await writeFile(downloadStream, pdfFiles[i].path);
+          }
           await merger.add(pdfFiles[i].path);
         }
         await merger.save(`/tmp/merged.pdf`);
         for (let i = 0; i < pdfFiles.length; i++) {
           // Deleting files as no longer needed
-          await fsp.unlink(pdfFiles[i].path);
+          if (fs.existsSync(pdfFiles[i].path)) {
+            await fsp.unlink(pdfFiles[i].path);
+          }
         }
         // Buffer is reset as sometimes previous session files were loaded
         merger.reset();
-        deleteMergedPDF(req);
+        deleteMergedPDF();
         res.redirect("openpdf");
       })();
     } else {
@@ -229,7 +237,9 @@ app.post("/filters", (req, res) => {
         await merger.add(pdfFiles[i].path, range);
         // delete the files locally and from database since they're used
         await bucket.delete(ObjectId(pdfFiles[i].id));
-        await fsp.unlink(pdfFiles[i].path);
+        if (fs.existsSync(pdfFiles[i].path)) {
+          await fsp.unlink(pdfFiles[i].path);
+        }
       }
     }
     await merger.save(`/tmp/merged.pdf`);
@@ -285,4 +295,4 @@ app.listen(3000, () => {
   console.log(`app listening on port 3000`);
 });
 
-module.exports.handler = serverless(app);
+module.exports = app;
