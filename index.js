@@ -9,14 +9,21 @@ const session = require("express-session");
 const path = require("path");
 const countPages = require("page-count");
 const serverless = require("serverless-http");
+const MongoDBStore = require("connect-mongodb-session")(session);
 // Variables Initialized
 const app = express();
+// configure MongoDB Database
+const store = new MongoDBStore({
+  uri: "mongodb+srv://akshit19:sGUuwKTtlK3znU4R@mergermancluster.3l1agd0.mongodb.net/",
+  collection: "sessions",
+});
 var sess = {
   secret: "SECRETKEY123",
   cookie: { maxAge: 36000000 },
   cookie: {},
   resave: false,
   saveUninitialized: true,
+  store: store,
 };
 if (app.get("env") === "production") {
   app.set("trust proxy", 1); // trust first proxy
@@ -90,7 +97,9 @@ const deleteMergedPDF = () => {
 app.post("/filters", (req, res) => {
   const pdfFiles = req.session.pdfFilesInfo;
   if (!pdfFiles || pdfFiles.length === 0) {
-    res.render("failure");
+    res.render("failure", {
+      errorMessage: "Session crashed while filter POST",
+    });
     return;
   }
   const startingPageNumbers = req.body.startingPageNumbers;
@@ -127,7 +136,7 @@ app.post("/filters", (req, res) => {
 app.get("/filters", (req, res) => {
   const pdfFiles = req.session.pdfFilesInfo;
   if (!pdfFiles || pdfFiles.length === 0) {
-    res.render("failure");
+    res.render("failure", { errorMessage: "Session crashed while filter GET" });
   } else {
     res.render("filters", { pdfFiles: pdfFiles });
   }
@@ -138,7 +147,7 @@ app.get("/downloadpdf", (req, res) => {
   if (fs.existsSync(`/tmp/merged.pdf`)) {
     res.download(`/tmp/merged.pdf`);
   } else {
-    res.render("failure");
+    res.render("failure", { errorMessage: "Merged file lost" });
   }
 });
 
@@ -147,7 +156,7 @@ app.get("/openpdf", (req, res) => {
   if (fs.existsSync(`/tmp/merged.pdf`)) {
     res.sendFile(`/tmp/merged.pdf`);
   } else {
-    res.render("failure");
+    res.render("failure", { errorMessage: "Merged file lost" });
   }
 });
 
@@ -156,9 +165,16 @@ app.get("/about", (req, res) => {
   res.render("about");
 });
 
+// app.get("/console", (req, res) => {
+//   if (store.serverStatus === undefined) {
+//     res.send("undefined");
+//   } else {
+//     res.send(store.serverStatus);
+//   }
+// });
+
 // Initial landing page
 app.get("/", (req, res) => {
-  req.session.pdfFilesInfo = [];
   res.render("index");
 });
 
@@ -166,4 +182,4 @@ app.listen(3000, () => {
   console.log(`app listening on port 3000`);
 });
 
-module.exports.handler = serverless(app);
+module.exports = app;

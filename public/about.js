@@ -1,5 +1,5 @@
 const readmeURL =
-  "https://raw.githubusercontent.com/Akshit1903/MergerMan/main/readme2.md";
+  "https://raw.githubusercontent.com/Akshit1903/MergerMan/main/readme.md";
 async function downloadReadMeFile() {
   let response = await fetch(readmeURL);
   if (response.status != 200) {
@@ -17,5 +17,5 @@ async function downloadReadMeFile() {
   setTimeout(() => {
     markdownbox.classList.remove("d-none");
     loader.classList.add("d-none");
-  }, 3000);
+  }, 2000);
 })();
