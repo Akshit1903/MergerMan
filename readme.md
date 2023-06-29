@@ -1,6 +1,6 @@
 # MergerMan
 
-MergerMan is a simple, minimal yet robust and efficient PDF merger application that merges two or more PDF file into one PDF file; developed using EJS, Express, and Node.js. The application allows users to merge multiple PDF files into a single PDF document.
+MergerMan is a simple, minimal yet robust and efficient PDF merger application that merges two or more PDF file into one PDF file; developed using EJS, Express, Node.js and MongoDB. The application allows users to merge multiple PDF files into a single PDF document.
 <br/>
 
 <a href="https://youtu.be/A-LjRjullyg">YouTube</a>
@@ -13,6 +13,7 @@ MergerMan is a simple, minimal yet robust and efficient PDF merger application t
 - Ability to enter the desired range of page numbers of individual PDF file.
 - Option to preview the merged PDF document before saving.
 - Easy-to-use and intuitive design.
+- Sessions stored on NoSQL DB for smooth functioning as serverless functions.
 
 <img src="./public/assets/mm1.gif" width="600px" height="auto" />
 <img src="./public/assets/mm2.gif" width="600px"height="auto" />
@@ -40,6 +41,7 @@ To run the PDF Merger App locally, follow these steps:
 - EJS: Templating engine for generating dynamic HTML templates.
 - Express: Web application framework for Node.js.
 - Node.js: JavaScript runtime environment.
+- MongoDB: NoSQL Database, File storage(GridFS)
 - PDFMerger: Library for manipulating PDF files.
 
 ## What I learnt
@@ -51,6 +53,8 @@ To run the PDF Merger App locally, follow these steps:
 - Error Handling:I encountered various potential errors, such as file upload failures or PDF processing issues. I learned how to handle and manage these errors gracefully, providing meaningful error messages to users and ensuring the server remains stable.
 - User Experience and UI: I learned how to create a user-friendly interface for adding files, showing options, and offering feedback on the creation of merged PDFs.
 - Deployment and Production Considerations: I learned about considerations for deploying the application in a production environment.
+- Managing sessions with MongoDB server.
+- Setting up GridFS to store user files and using MongoDB Compass for local development.
 
 ## Future Scope:
 
